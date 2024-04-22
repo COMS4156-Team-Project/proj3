@@ -1,0 +1,42 @@
+###CMD: python main.py INTEGRATED-DATASET.csv 0.25 0.75
+==Frequent itemsets (min_sup=25.0%)
+('none_killed',), 99.45%
+('injured_1',), 78.63%
+('injured_1', 'none_killed'), 78.55%
+('Driver Inattention/Distraction',), 37.01%
+('Driver Inattention/Distraction', 'none_killed'), 36.9%
+('Misc Human Errors',), 33.13%
+('Misc Human Errors', 'none_killed'), 32.92%
+('BROOKLYN',), 32.68%
+('BROOKLYN', 'none_killed'), 32.5%
+('Night',), 30.75%
+('none_killed', 'Night'), 30.52%
+('Driver Inattention/Distraction', 'injured_1'), 29.4%
+('Driver Inattention/Distraction', 'injured_1', 'none_killed'), 29.39%
+('QUEENS',), 29.02%
+('QUEENS', 'none_killed'), 28.87%
+('Q3',), 27.07%
+('none_killed', 'Q3'), 26.92%
+('Evening',), 26.77%
+('none_killed', 'Evening'), 26.66%
+('Q4',), 26.18%
+('Misc Human Errors', 'injured_1'), 26.15%
+('Misc Human Errors', 'injured_1', 'none_killed'), 26.13%
+('none_killed', 'Q4'), 26.04%
+('BROOKLYN', 'injured_1'), 25.41%
+('BROOKLYN', 'injured_1', 'none_killed'), 25.38%
+==High-confidence association rules (min_conf=75.0%)
+('Driver Inattention/Distraction',) => ('none_killed',) (Conf: 99.71%, Supp: 36.9%)
+('Evening',) => ('none_killed',) (Conf: 99.6%, Supp: 26.66%)
+('QUEENS',) => ('none_killed',) (Conf: 99.49%, Supp: 28.87%)
+('Q4',) => ('none_killed',) (Conf: 99.45%, Supp: 26.04%)
+('Q3',) => ('none_killed',) (Conf: 99.44%, Supp: 26.92%)
+('BROOKLYN',) => ('none_killed',) (Conf: 99.42%, Supp: 32.5%)
+('Misc Human Errors',) => ('none_killed',) (Conf: 99.39%, Supp: 32.92%)
+('Night',) => ('none_killed',) (Conf: 99.26%, Supp: 30.52%)
+('Driver Inattention/Distraction',) => ('injured_1',) (Conf: 79.45%, Supp: 29.4%)
+('Driver Inattention/Distraction',) => ('injured_1', 'none_killed') (Conf: 79.41%, Supp: 29.39%)
+('Misc Human Errors',) => ('injured_1',) (Conf: 78.95%, Supp: 26.15%)
+('Misc Human Errors',) => ('injured_1', 'none_killed') (Conf: 78.86%, Supp: 26.13%)
+('BROOKLYN',) => ('injured_1',) (Conf: 77.74%, Supp: 25.41%)
+('BROOKLYN',) => ('injured_1', 'none_killed') (Conf: 77.64%, Supp: 25.38%)

@@ -4,7 +4,7 @@ from constants import COLS_TO_REMOVE, CATEGORY_MAPPING, MONTH_TO_WORD
 
 def get_cmdline_args():
     if len(sys.argv) != 2:
-        sys.exit("REQUIRED FORMAT: python preprocess.py [integrated dataset file path]")
+        sys.exit("REQUIRED FORMAT: python preprocess.py [raw dataset file path]")
 
     return sys.argv[1]
 
