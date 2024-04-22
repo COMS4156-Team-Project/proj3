@@ -133,8 +133,6 @@ pip install -r requirements.txt
 python main.py INTEGRATED-DATASET.csv 0.10 0.57
 ```
 
-## Dataset description
-
 ## Code Design and Logic
 <p>
 We used the association rules in our INTEGRATED-DATASET file, where each row in your file corresponds to one "market basket" and each column have different set of attributes whose union correspond to set of possible items.
@@ -183,7 +181,7 @@ Then we do the following:
 
 ## Observations and Results
 
-### Result:
+### Results:
 * min_sup = 0.1
 * min_conf = 0.57
 ```
@@ -252,7 +250,7 @@ Then we do the following:
 ['MANHATTAN'] => ['cyclists_or_pedestrians_injured'] (Conf: 57.04%, Supp: 10.74%)
 ```
 
-### Observation
+### Observations
 
 We observe the following relations from the above result:
 * BRONX, QUEENS, BROOKLYN have comparatively higher accidents where motorcyclists were injured when compared to MANHATTAN.
