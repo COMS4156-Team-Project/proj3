@@ -77,7 +77,7 @@ class Itemset(object):
             raise ValueError("Must be an instance of Itemset class")
 
     def __str__(self):
-        return str(self.items_list)
+        return str(list(self.items_list))
 
     def __repr__(self):
         return f"<Itemset Obj: {self.mask_str}>"
