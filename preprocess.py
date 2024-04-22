@@ -1,25 +1,12 @@
 import sys
 import pandas as pd
-from constants import COLS_TO_REMOVE, CATEGORY_MAPPING, MONTH_TO_WORD
+from constants import COLS_TO_REMOVE, CATEGORY_MAPPING, INJURED_KILLED_COLS
 
 def get_cmdline_args():
     if len(sys.argv) != 2:
         sys.exit("REQUIRED FORMAT: python preprocess.py [raw dataset file path]")
 
     return sys.argv[1]
-
-
-def injured_map(x):
-    x = int(x)
-    if x == 1:
-        return 'injured_1'
-    return 'injured_>_1'
-
-
-def killed_map(x):
-    if x == 0:
-        return 'none_killed'
-    return 'few_killed'
 
 
 def time_map(x):
@@ -44,6 +31,21 @@ def month_to_quarter(x):
     elif x<=9:
         return 'Q3'
     return 'Q4'
+
+
+def injured_list_map(row):
+    ans = []
+    if int(row['NUMBER OF PEDESTRIANS INJURED']) > 0 or int(row['NUMBER OF CYCLIST INJURED']) > 0:
+        ans.append('cyclists_or_pedestrians_injured')
+
+    if int(row['NUMBER OF MOTORIST INJURED']) > 0:
+        ans.append('motorists_injured')
+
+    if len(ans) == 0:
+        ans.append('none_injured')
+
+    return ','.join(ans)
+
 
 if __name__ == '__main__':
     dataset_file_path = get_cmdline_args()
@@ -79,22 +81,24 @@ if __name__ == '__main__':
     df = df.reset_index(drop=True)
 
     # Bucketize injured map
-    df['injured_bucket'] = df['NUMBER OF PERSONS INJURED'].apply(injured_map)
-
-    # Bucketize killed map
-    df['killed_bucket'] = df['NUMBER OF PERSONS KILLED'].apply(killed_map)
+    df['injured_bucket'] = df.apply(injured_list_map, axis=1)
 
     # Bucketize time map into Morning, Evening, Night, Afternoon
     df['time_map'] = df['CRASH TIME'].apply(time_map)
 
-    # Remove no longer used columns
-    df = df.drop(columns=['CRASH DATE', 'CRASH TIME', 'NUMBER OF PERSONS INJURED', 'NUMBER OF PERSONS KILLED'])
+    # Drop empty values of injured bucket
+    df = df[df['injured_bucket'] != 'none_injured']
+
+    # Remove no longer used columnss and nan vals
+    df = df.drop(columns=[*INJURED_KILLED_COLS, 'CRASH DATE', 'CRASH TIME', 'NUMBER OF PERSONS INJURED', 'NUMBER OF PERSONS KILLED'])
     df = df.reset_index(drop=True)
 
-    # # Convert months into actual names
-    # df['MONTH'] = df['MONTH'].apply(lambda x: MONTH_TO_WORD[int(x)])
-
+    # Get quarter for month
     df['QUARTER'] = df['MONTH'].apply(lambda x: month_to_quarter(int(x)))
+
+    # Remove month column since we have quarter
+    df = df.drop(columns=['MONTH'])
+    df = df.reset_index(drop=True)
 
     # Save to csv file
     print(f"Saving preprocessed data to file {dest_file_path}")
