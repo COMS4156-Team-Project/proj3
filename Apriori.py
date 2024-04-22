@@ -6,6 +6,9 @@ from utils import get_subsets
 
 
 class Apriori(object):
+    '''
+        Class for defining the Apriori Algorithm
+    '''
     def __init__(self, dataset_path: str = None, min_supp: float = 0.1, min_conf: float = 0.9, test: bool = False):
         self.min_supp = min_supp
         self.min_conf = min_conf
@@ -30,6 +33,9 @@ class Apriori(object):
             self.market_basket_itemsets.append(Itemset(basket))
 
     def need_to_prune(self, freqset: Itemset, prev_freqsets: set[Itemset]) -> bool:
+        '''
+        Checks if we need to prune the itemset
+        '''
         mask = freqset.mask
         prev_freqsets = set(prev_freqsets)
         for i in range(len(freqset.items_list)):
@@ -41,6 +47,9 @@ class Apriori(object):
         return False
 
     def filter_by_support(self, cand_itemsets: set[Itemset]) -> tuple[set[Itemset], Dict[Itemset, float]]:
+        '''
+        Filters itemsets with provided minsupp value.
+        '''
         filtered_itemsets = set()
         itemset_support_dict = dict()
         for itemset in cand_itemsets:
@@ -108,17 +117,42 @@ class Apriori(object):
 
     def print_association_rules(self, association_rules: set[AssociationRule]):
         print(f"==High-confidence association rules (min_conf={round(self.min_conf * 100, 2)}%)")
-        for rule in association_rules:
+        for rule in sorted(list(association_rules), key=lambda x: x.conf, reverse=True):
             print(rule)
 
     def print_frequent_itemsets(self, min_supp_itemset_dict: Dict[Itemset, float]):
         print(f"==Frequent itemsets (min_sup={round(self.min_supp * 100, 2)}%)")
-        for itemset, supp in min_supp_itemset_dict.items():
+        min_supp_itemset_tuples = list(min_supp_itemset_dict.items())
+        for itemset, supp in sorted(min_supp_itemset_tuples, key=lambda x: x[1], reverse=True):
             print(f"{str(itemset)}, {round(supp * 100, 2)}%")
+
+
+    def filter_spurious_association_rules(self, association_rules: set[AssociationRule]):
+        filtered_rules = set()
+        for rule in association_rules:
+            lhs_injured = False
+            lhs_killed = False
+            rhs_injured = False
+            rhs_killed = False
+            if True in [('injured' in item) for item in rule.lhs.items_list]:
+                lhs_injured = True
+            if True in [('killed' in item) for item in rule.lhs.items_list]:
+                lhs_killed = True
+            if True in [('injured' in item) for item in rule.rhs.items_list]:
+                rhs_injured = True
+            if True in [('killed' in item) for item in rule.rhs.items_list]:
+                rhs_killed = True
+
+            if (lhs_killed or lhs_injured) and (rhs_killed or rhs_injured):
+                continue
+
+            filtered_rules.add(rule)
+
+        return filtered_rules
 
     def execute(self):
         min_supp_itemset_dict = self.get_all_itemsets_with_min_support()
         association_rules = self.filter_by_confidence(min_supp_itemset_dict)
         self.print_frequent_itemsets(min_supp_itemset_dict)
-        self.print_association_rules(association_rules)
+        self.print_association_rules(self.filter_spurious_association_rules((association_rules)))
 

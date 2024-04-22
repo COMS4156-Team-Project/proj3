@@ -10,8 +10,12 @@ class Dataset(object):
         pass
 
     def get_items(self) -> list:
-        pass
+        items  = []
+        for col in self.df.columns.values:
+            items += list(self.df[col].unique())
+
+        return items
 
     def get_market_baskets(self) -> list[tuple]:
-        pass
+        return list(self.df.to_records(index=False))
 

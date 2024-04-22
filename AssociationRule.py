@@ -2,6 +2,9 @@ from Itemset import Itemset
 
 
 class AssociationRule(object):
+    '''
+        Class for defining the association rule LHS => RHS
+    '''
     def __init__(self, lhs: Itemset, rhs: Itemset, supp: float, conf: float):
         self.lhs = lhs
         self.rhs = rhs

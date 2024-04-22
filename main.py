@@ -14,6 +14,6 @@ def get_cmdline_args():
 
 if __name__ == '__main__':
     filename, min_supp, min_conf = get_cmdline_args()
-    apriori_algo = Apriori(filename, min_supp, min_conf, test=True)
+    apriori_algo = Apriori(filename, min_supp, min_conf)
     apriori_algo.execute()
 
