@@ -1,12 +1,12 @@
 
 ## Project 3 - Association Rule Mining
 
-### Implemented a version of the A-Priori algorithm to extract association rules from data
+### Implemented a version of the A-Priori algorithm to extract association rules from NYC dataset
 
 ## Authors
 <ul>
-    <li>Ajit Sharma Kasturi</li>
-    <li>Samhit Chowdary Bhogavalli</li>
+    <li>Ajit Sharma Kasturi (ak5055)</li>
+    <li>Samhit Chowdary Bhogavalli (sb4845)</li>
 </ul>
 
 ## Files
@@ -84,7 +84,7 @@
 
 For thie project, we choose a dataset of [NYC Motor Vehicle Collisions](https://data.cityofnewyork.us/Public-Safety/Motor-Vehicle-Collisions-Crashes/h9gi-nx95/about_data). This dataset contains all the information about recent automobile accidents in New York. Each row in this dataset provides information about a particular accident in New York. Its has lot information regarding the accident like Borough in which the accident occured, Date and time, no. of people injured, different classes of injured people (cyclists, motorcyclists ...etc), it also has similar information on no. of people killed in the accident and also contains the contributing factor of the accident. we chose this dataset to gain insightful information about accidents in the city we live and this can also be usefull to people by provide information on more accident-prone areas 
 
-## Data Preprocessing
+## Dataset Preprocessing
 
 
 
@@ -125,82 +125,54 @@ pip install -r requirements.txt
 python main.py INTEGRATED-DATASET.csv 0.25 0.75
 ```
 
+## Dataset description
+
 ## Code Design and Logic
-<p>We used SOLID design principles to write a clean and maintainable code. We performed the Iterative Set Expansion (ISE) algorithm discussed in class. In our logic, we handled ignoring non-HTML files by checking the fileFormat attribute of the json data returned by google search engine upon querying it. However, the queries that we send to Google is not limiting the document types that we receive. </p>
-<ol>
-  <li>The iterative set expansion algorithm is implemented as follows:
-  <ul>
-    <li>First we begin with reading the following parameters (in the below order) from the user:
-            <ul>
-		     <li>
-		     Model flag[-gemini/-spanbert]
-		     </li>
-	             <li>
-	             Google Custom Search Engine JSON API Key
-	             </li>
-	             <li>
-	             Google Engine ID
-	             </li>
-	             <li>
-	             Google Gemini API key
-	             </li>
-	             <li>
-	             An integer r between 1 and 4, indicating the relation to extract: 1 is for Schools_Attended, 2 is for Work_For, 3 is for Live_In, and 4 is for Top_Member_Employees
-	             </li>
-	             <li>
-	             Extraction Confidence threshold
-	             </li>
-	             <li>
-	             Seed query q
-	             </li>
-	             <li>
-	             An integer  k  greater than 0, indicating the number of tuples that we request in the output
-	             </li>
-			</ul>    
-    </li>
-    <li>By calling our SearchEngine class (which is a wrapper for calling Google search engine API and processing the result) with the seed query argument, we extract the top 10 links from Google.</li>
-    <li>For each link, we scrape the HTML content and extract textual content from it. If the total number of extracted characters is greater than 10000, we only consider the top 10000 characters extracted. </li>
-    <li>We then use the spacy library to get sentences from text and then annotate them with the entities mentioned in the ENTITIES_OF_INTEREST constant. </li>
-    <li>From the relation given in the input, we can identify the entity pairs of interest and get list of tuples from the annotated sentences using the following format (SUBJECT entity, OBJECT entity, tokenized sentence containing this subject and object). We only consider the candidate sentences which have this subject-object pairs and discard the rest.</li>
-    <li> We then performing the following: (dependening on whether we use Spanbert or Gemini):
-	   <ul>
-		   <li>
-			   For Spanbert:
-			   <ul>
-				   <li>
-					   We pass the list of (Subject, Object, Tokenized sentence) tuples to our Spanbert wrapper (which internally calls the actual Spanbert) to get a list of tuples with confidence greater than or equal to the confidence threshold parameter provided in the input. 
-				   </li>
-			   </ul>
-		   </li>
-		   <li>
-			   For Gemini:
-			   <ul>
-				   <li>
-					   We need not tokenize sentence in this case. We engineered a prompt which has the candidate sentence in it and pass that prompt to Gemini asking us to return relation tuples in a fixed format. Then Gemini provides us with those list og tuples (provided as string) and we later parse it to get the extracted tuples from Gemini.
-				   </li>
-				   <li>
-					   Sample prompt:  <br><br>
-                        <i> I will give you a paragraph and relationship types as input, you have to analyze the paragraph properly and extract all examples of the mentioned relationship types that you can find in the paragraph. <br> <br>
-Relationship types: Employee of. 
-Paragraph: Google CEO Sundar Pichai Appointed To Alphabet Board Of Directors <br> <br>
-Please give outputs in [Subject:_:Relationship:_:Object] format. </i> <br> <br>
-				   </li>
-			   </ul>
-		   </li>
-	  </ul>
-  </li>
-    <li>Once we get the extracted tuples, if the number of tuples is at least k, we break the loop. If it is less than k,  we get the tuple with highest confidence not queried before, make a seed query from it by concatenating subject and object and use this as a starting query in the current iteration. We do this till the number of tuples extracted is greater than or equal to k. (We also stop if there are no further tuples to query.)</li>
-    </li>
-  Corner case handlings:
-  <ul> 
-  <li>We made sure to remove duplicate tuples in the list of extracted tuples and also made sure the seed queries are different in each iteration.</li>
-  <li>If no seed tuple extracted with good confidence is left to query, we stop the program immediately mentioning the reason.</li>
-  <li>If the number of command line arguments is incorrect, we stop the program gracefully mentioning the reason for exit and the correct command line arguments format.</li>
-  <li>
-  We only query sentences to Gemini or Spanbert that contain all of our required entities.
-  </li>
-  </ul>
- </li>
-</ol>
+<p>
+We used the association rules in our INTEGRATED-DATASET file, where each row in your file corresponds to one "market basket" and each column have different set of attributes whose union correspond to set of possible items.
+We initially receive the INTEGRATED-DATASET file along with minimum support and minimum confidence as command line arguments.
+Then we do the following:
+</p>
 
+<ul>
+    <li>  
+        First, we get all the frequent itemsets with minimum support by standard apriori algorithm.
+        This logic is written in the get_all_itemsets_with_min_support function. This function basically
+        does the following:
+        <ul>
+            <li>
+                In this algorithm for discovering large itemsets, we perform multiple passes through the data. In the first pass, we count the support of individual items to determine which ones are large, i.e. have the least support. In each subsequent pass, we begin with a seed set of itemsets that were identified as large in the previous pass. We use this seed set to generate new potentially large itemsets, known as candidate itemsets, and then count the actual support for these candidate itemsets as we pass through the data. At the end of the pass, we determine which of the candidate itemsets are actually large, and those become the seed for the following pass. This process continues until no new large item sets are discovered.
+            </li>
+            <li>
+                The apriori-gen utility function that we wrote takes as argument Lk-1, the set of all large (k- 1)-itemsets. It returns candidate set of all large k-itemsets. The
+                function works as follows. First, in the join step, we join Lk-1 with Lk-1: insert into Ck
+                select p.item,, p.item, ..., p.itemk-1, g.itemk-1 from Lk-1 P, Lk-1 where p.item, = qitems, .., pitemk-2 = g.itemk-2,
+                p.itemk-1 < g.itemk-1;
+            </li>
+            <li>
+                Next, in the prune step, we delete all itemsets c <span>&#x2208;</span> ck such that some (k-1)-subset of c is not in Lk-1
+                Our function need_to_prune does exactly this step.
+            </li>
+            <li>
+                After k iterations, if we dont further generate any more frequent itemsetes with minimum support, we break the loop
+                and return union of all the itemsets of sizes from 1 to k that we have obtained.
+            </li>
+        </ul>
+    </li>
+    <li>
+        After we get set of all itemsets in min support, we iterate over each itemset, search all possible combinations of LHS and RHS parts
+        of association rules, compute their confidence values and filter those association values with minimum confidence.
+    </li>
+    <li>
+        We also did the following optimizations and corner case logic to our code:
+        <ul>
+            <li>We created an Itemset class which stores the set of items in form of a bitmask. This is efficient data structure for merge operations (it is simply bitwise or of those bitmask.) It also helps us iterate the subsets of bitmasks (for getting LHS and RHS efficiently.)</li>
+            <li>We filtered some bad association rules specific to our dataset (For example, killed => injured etc.)</li>
+            <li>We made sure to include those association rules which have length of LHS and RHS at least 1.</li>
+        </ul>
+    </li>
+</ul>
 
+## Observations and Results
+<p></p>
+<ul></ul>
