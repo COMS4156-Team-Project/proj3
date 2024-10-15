@@ -6,7 +6,7 @@
 ## Authors
 <ul>
     <li>Ajit Sharma Kasturi (ak5055)</li>
-    <li>Samhit Chowdary Bhogavalli (sb4845)</li>
+    <li>Samhit Chowdary Bhogavalli  (sb4845)</li>
 </ul>
 
 ## Files
